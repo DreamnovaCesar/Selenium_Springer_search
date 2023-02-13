@@ -9,33 +9,97 @@ from abc import abstractmethod
 
 # ?
 class GetInfo(Utilities, ABCMeta):
+    """Class for getting information about publications related to the subject the user wants on the Springer website
 
+    Parameters
+    ----------
+    Springer_link : str
+        The URL for the Springer website.
+    Subject : str
+        The subject to search for on the Springer website.
+
+    Methods
+    -------
+    __repr__()
+        Returns a string representation of the `GetInfo` class object.
+    __str__()
+        Returns a string description of the `GetInfo` class object.
+    __del__()
+        Destructor for the `GetInfo` class.
+    data_dic()
+        Returns a dictionary of the `GetInfo` class object's attributes.
+    get_info_springer()
+        Scrapes information about publications related to the subject the user wants from the Springer website
+        and stores it in a pandas dataframe.
+
+    Examples
+    --------
+    >>> 
+    >>> 
+    >>>
+    """
+
+    # * Initializing (Constructor)
     def __init__(self, **kwargs) -> None:
-        pass
+        
+        self.__Spinger_link = "https://link.springer.com/";
+        self.__Subject = kwargs.get('Subject', None)
+
         # * chromedriver path
         #self.__Path_chrome_driver = r"chromedriver.exe"
 
-    def __repr__(self):
+    # * Class variables
+    def __repr__(self) -> str:
 
-        kwargs_info = "{}, {}".format()
+        kwargs_info = '''{}, {}'''.format(  self.__Spinger_link, 
+                                            self.__Subject)
 
         return kwargs_info
 
-    def __str__(self):
-        pass
+    # * Class description
+    def __str__(self) -> str:
+        return  f'''{self.__Spinger_link},
+                    {self.__Subject}''';
     
+    # * Deleting (Calling destructor)
+    def __del__(self):
+        print('Destructor called, GetInfo class destroyed.');
+
+    # * Get data from a dic
+    def data_dic(self) -> dict:
+
+        return {'Link': str(self.__Spinger_link),
+                'Subject': str(self.__Subject)
+                };
+
+    # ?
     @profile
     @Utilities.timer_func
     def get_info_springer(self) -> None:
+        """
+        Scrapes information from the Springer website and stores it in a pandas dataframe.
 
-        
+        This function uses the Selenium WebDriver to automate the process of searching for 
+        information about publications related to "Artificial intelligence" on the Springer website. 
+        The information obtained includes the publication link, title, subtitle, authors, 
+        publication title, year, and DOI. 
+
+        The function first sets up a Chrome webdriver with certain experimental options and sets a sleep value to control
+        the timing between actions. It then navigates to the Springer website and inputs the search query. 
+        The results of the search are obtained and processed one by one, with the publication information being scraped
+        and added to the dataframe.
+
+        The function uses try-except blocks to handle possible exceptions that may occur when searching for elements on the page.
+        If a certain piece of information cannot be found for a publication, the value for that column in the dataframe is set to 'None'.
+        """
+
         Chrome_options = webdriver.ChromeOptions()
         Chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
         Time_sleep_value = 0.2
 
         Driver = webdriver.Chrome(options = Chrome_options)
-        Driver.get("https://link.springer.com/")
+        Driver.get(self.__Spinger_link)
 
         # * Waiting time
         Driver.implicitly_wait(Time_sleep_value)
