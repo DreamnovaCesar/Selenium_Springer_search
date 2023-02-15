@@ -30,10 +30,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-import Springer_Selenium_Settings
+import Settings
 
 # ?
-class GetInfo(Utilities):
+class SpringerInfoCollector(Utilities):
     """Class for getting information about publications related to the subject the user wants on the Springer website
 
     Parameters
@@ -67,13 +67,7 @@ class GetInfo(Utilities):
     # * Initializing (Constructor)
     def __init__(self, **kwargs) -> None:
         
-        """Initializes the `GetInfo` class object with the `Springer_link` and `Subject` attributes.
-
-        Parameters
-        ----------
-        kwargs : dict
-            Dictionary of arguments to initialize the `GetInfo` class object.
-        """
+        """Initializes the `GetInfo` class object with the `Springer_link` and `Subject` attributes."""
 
         self.__Spinger_link = "https://link.springer.com/";
         self.__Subject = kwargs.get('Subject', None);
@@ -92,11 +86,14 @@ class GetInfo(Utilities):
 
     # * Class description
     def __str__(self) -> str:
+        """Return a string representation of the `GetInfo` class object."""
+
         return  f'''{self.__Spinger_link},
                     {self.__Subject}''';
     
     # * Deleting (Calling destructor)
     def __del__(self):
+        """Destructor for the `GetInfo` class."""
         print('Destructor called, GetInfo class destroyed.');
 
     # * Get data from a dic
@@ -153,13 +150,13 @@ class GetInfo(Utilities):
         # * Amount of time to wait (in seconds)
         Driver.implicitly_wait(Time_sleep_value)
 
-        Search_box = Driver.find_element(By.XPATH, Springer_Selenium_Settings._ID_QUERY_)
+        Search_box = Driver.find_element(By.XPATH, Settings._ID_QUERY_)
         Search_box.send_keys(self.__Subject)
 
         # * Interval times
         time.sleep(Time_sleep_value)
 
-        Search_button = Driver.find_element(By.XPATH, Springer_Selenium_Settings._ID_SEARCH_)
+        Search_button = Driver.find_element(By.XPATH, Settings._ID_SEARCH_)
         Search_button.click()
 
         # * A list in Python that contains the names of columns for a dataframe.
@@ -178,8 +175,8 @@ class GetInfo(Utilities):
             Driver.implicitly_wait(Time_sleep_value)
 
             #results_list = driver.find_element(By.XPATH, "//*[@id='results-list']")
-            results_list = Driver.find_element(By.CLASS_NAME, Springer_Selenium_Settings._CONTENT_LIST_)
-            publications = results_list.find_elements(By.TAG_NAME, Springer_Selenium_Settings._TAG_NAME_LI_)
+            results_list = Driver.find_element(By.CLASS_NAME, Settings._CONTENT_LIST_)
+            publications = results_list.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
             None_ = 'None'
 
             for j, publication in enumerate(publications):
@@ -258,14 +255,14 @@ class GetInfo(Utilities):
                     
                     try:
 
-                        Table_info = Driver.find_element(By.CLASS_NAME, Springer_Selenium_Settings._BIBLIOGRAPHIC_INFO_LIST_)
-                        Cells_info = Table_info.find_elements(By.TAG_NAME, Springer_Selenium_Settings._TAG_NAME_LI_)
+                        Table_info = Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_)
+                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
 
                         for Cell in Cells_info:
-                            DOI_title = Cell.find_element(By.CLASS_NAME, Springer_Selenium_Settings._DOI_TEXT_).text
+                            DOI_title = Cell.find_element(By.CLASS_NAME, Settings._DOI_TEXT_).text
 
                             if(DOI_title == 'DOI'):
-                                DOI = Cell.find_element(By.CLASS_NAME, Springer_Selenium_Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
+                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
 
                         print("{}: {}".format(Columns_springer_info[6], DOI));
                         Columns_values.append(DOI);
@@ -276,14 +273,14 @@ class GetInfo(Utilities):
 
                     try:
 
-                        Table_info = Driver.find_element(By.CLASS_NAME, Springer_Selenium_Settings._BIBLIOGRAPHIC_INFO_LIST_UMB24_)
-                        Cells_info = Table_info.find_elements(By.TAG_NAME, Springer_Selenium_Settings._TAG_NAME_LI_)
+                        Table_info = Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_UMB24_)
+                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
 
                         for Cell in Cells_info:
-                            DOI_title = Cell.find_element(By.CLASS_NAME, Springer_Selenium_Settings._DIGITAL_OBJECT_IDENTIFIER_).text
+                            DOI_title = Cell.find_element(By.CLASS_NAME, Settings._DIGITAL_OBJECT_IDENTIFIER_).text
 
                             if(DOI_title == 'DOI'):
-                                DOI = Cell.find_element(By.CLASS_NAME, Springer_Selenium_Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
+                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
 
                         print("{}: {}".format(Columns_springer_info[6], DOI));
                         Columns_values.append(DOI);
@@ -313,7 +310,7 @@ class GetInfo(Utilities):
             # * Interval times
             time.sleep(Time_sleep_value);
 
-            Next_button = Driver.find_element(By.CLASS_NAME, Springer_Selenium_Settings._NEXT_CONTEST_LIST_)
+            Next_button = Driver.find_element(By.CLASS_NAME, Settings._NEXT_CONTEST_LIST_)
             Next_button.click()
 
         # * Interval times
