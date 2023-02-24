@@ -17,18 +17,45 @@ from ...Utilities import Settings
 
 @Singleton.singleton
 class SpringerInfoCollector(InfoCollector):
-    """Concrete class for collecting information from Springer website."""
-    
+    """
+    Concrete class for collecting information from Springer website.
+
+    Attributes
+    ----------
+    __Chrome_options : webdriver.ChromeOptions
+        Chrome options for WebDriver.
+    __Driver : webdriver.Chrome
+        WebDriver instance.
+    __Springer_link : str
+        Link to Springer website.
+    __Folder : str
+        Path to folder where the data will be saved.
+    __Columns_springer_info : list
+        List of column names for the SpringerInfoCollector dataframe.
+    __Columns_springer_info_lower : list
+        List of lowercased column names for the SpringerInfoCollector dataframe.
+    Dataframe_springer_info : pandas.DataFrame
+        Dataframe for storing the scraped data.
+
+    Methods
+    -------
+    collect_info(Subject: str) -> pandas.DataFrame:
+        Collects information for a given search subject.
+
+    """
+
     def __init__(self):
 
+        # * Configures Chrome driver options to exclude logging and initializes Chrome driver
         self.__Chrome_options = webdriver.ChromeOptions()
         self.__Chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-
         self.__Driver = webdriver.Chrome(options = self.__Chrome_options)
 
+        # * Sets the URL for Springer website and folder path for collected data
         self.__Springer_link = "https://link.springer.com/";
         self.__Folder = r'App\src\Data';
 
+        # * Sets the columns for the collected data in uppercase and lowercase for comparison
         self.__Columns_springer_info = [
             "Href", "Title", "Subtitle", "Authors", "Publication_title", "Year", "DOI"
         ];
@@ -37,49 +64,60 @@ class SpringerInfoCollector(InfoCollector):
             i.lower() for i in self.__Columns_springer_info
         ];
 
+        # * Initializes an empty Pandas DataFrame to store collected data
         self.Dataframe_springer_info = pd.DataFrame(columns = self.__Columns_springer_info);
 
+    # * Decorator for timing how long the collect_info method takes to execute
     @Timer.timer
-    def collect_info(self, Subject: str) -> pd.DataFrame:
-        
-        Chrome_options = webdriver.ChromeOptions()
-        Chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    def collect_info(self, Subject: str, Pages_number : int = 20) -> pd.DataFrame:
+        """
+        Collects information for a given search subject.
 
-        Time_sleep_value = 0.2
+        Parameters
+        ----------
+        Subject : str
+            The subject to search for.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The dataframe containing the collected data.
+        """
+
+        # * Sets a value for the sleep time and navigates to the Springer website
+        Time_sleep_value = 0.1
         self.__Driver.get(self.__Springer_link)
         self.__Driver.implicitly_wait(Time_sleep_value)
 
+        # * Waits until the search box is present on the page
         Search_box = WebDriverWait(self.__Driver, 10).until(
             EC.presence_of_element_located((By.XPATH, Settings._ID_QUERY_)))
 
-        #Search_box = self.Driver.find_element(By.XPATH, Settings._ID_QUERY_)
+        # * Enters the search term into the search box and clicks the search button
         Search_box.send_keys(Subject)
-
-        # * Interval times
         time.sleep(Time_sleep_value)
-
         Search_button = self.__Driver.find_element(By.XPATH, Settings._ID_SEARCH_)
         Search_button.click()
 
+        # * Initializes an empty Pandas DataFrame to store collected data
         Dataframe_springer_info = pd.DataFrame(columns = self.__Columns_springer_info)
 
-        #print(Dataframe)
-
-        for _ in range(20):
+        # * Iterates over pages_number value search results and collects information
+        for _ in range(Pages_number):
             
-            # * Waiting time
+            # Waits for the search results to load
             self.__Driver.implicitly_wait(Time_sleep_value)
 
-            #results_list = driver.find_element(By.XPATH, "//*[@id='results-list']")
+            # Finds the list of search results and iterates over each publication
             Results_list = self.__Driver.find_element(By.CLASS_NAME, Settings._CONTENT_LIST_)
             Publications = Results_list.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
-    
             None_ = 'None'
 
             for _, Publication in enumerate(Publications):
                 
                 Columns_values = []
 
+                # * Tries to extract the href links for the publication and appends to column_values
                 try:
                     Links = Publication.find_elements(By.CLASS_NAME, self.__Columns_springer_info[1].lower())
                     
@@ -89,6 +127,7 @@ class SpringerInfoCollector(InfoCollector):
                         Columns_values.append(Link_href);
 
                 except NoSuchElementException:
+                    # * Appends empty string to column_values if the element is not found
                     Columns_values.append('')
                     print(None_);
 
@@ -137,19 +176,20 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append('')
                     print(None_);
 
-                # open a new tab
+                # navigate to another website in the new ta
                 self.__Driver.execute_script("window.open('');")
 
                 # switch to the new tab
                 self.__Driver.switch_to.window(self.__Driver.window_handles[-1])
 
-                # navigate to another website in the new tab
+                # * Navigate to another website in the new tab
                 if(Link_href):
                     self.__Driver.get(Link_href)
 
                     # * Waiting time
                     self.__Driver.implicitly_wait(Time_sleep_value)
                     
+                    # * Search for DOI information
                     try:
 
                         Table_info = self.__Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_)
@@ -187,9 +227,8 @@ class SpringerInfoCollector(InfoCollector):
                         print(None_);
                     
                     New_row_to_add = dict(zip(self.__Columns_springer_info, Columns_values))
-
-                    print(New_row_to_add)
                     
+                    # * Name CSV file and save it to the folder
                     Dataframe_springer_info = Dataframe_springer_info.append(pd.Series(New_row_to_add), ignore_index = True)
                     Dataframe_springer_info_name = "{}_info.csv".format(Subject)
                     Dataframe_springer_info_csv = os.path.join(self.__Folder, Dataframe_springer_info_name)
@@ -200,19 +239,21 @@ class SpringerInfoCollector(InfoCollector):
                     # * Interval times
                     time.sleep(Time_sleep_value);
 
-                    # close the new tab
+                    # * close the new tab
                     self.__Driver.close()
 
-                    # switch back to the original tab
+                    # * switch back to the original tab
                     self.__Driver.switch_to.window(self.__Driver.window_handles[0])
 
             # * Interval times
             time.sleep(Time_sleep_value);
-
+            
+            # * Button to change the current page to the new page
             Next_button = self.__Driver.find_element(By.CLASS_NAME, Settings._NEXT_CONTEST_LIST_)
             Next_button.click()
 
         # * Interval times
         time.sleep(Time_sleep_value);
 
+        # * Close Driver
         self.__Driver.quit()
