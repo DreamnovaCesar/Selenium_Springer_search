@@ -1,8 +1,12 @@
-![alt text](Springer_Extractor.png)
 
 # Web scraping to Springer page
 
 Springer is a global publishing company that specializes in academic journals, books, and reference works. Founded in 1842, Springer has since grown to become one of the world's largest academic publishers with offices in over 20 countries. Springer publishes research and scholarly works in a wide range of fields, including science, technology, medicine, engineering, social sciences, humanities, and business. They publish peer-reviewed academic journals, books, and reference works in both print and digital formats, and their online platform provides access to millions of articles and books from thousands of authors and editors. Springer aims to promote the dissemination of scientific knowledge, facilitate communication among researchers and academics, and advance research and education worldwide.
+
+<p align="center">
+![alt text](Springer_Extractor.png)
+</p>
+
 
 ## Setup
 
@@ -36,7 +40,7 @@ python -m app.src.main
 
 ### Built With
 
-![Python](https://img.shields.io/badge/-Python-05122A?style=flat&logo=python)&nbsp;
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)&nbsp;
 ![Selenium](https://img.shields.io/badge/-selenium-%43B02A?style=for-the-badge&logo=selenium&logoColor=white)&nbsp;
 
 
@@ -56,9 +60,3 @@ Please make sure to update tests as appropriate.
 <a href="mailto:cesareduardomucha@hotmail.com"><img src="https://img.shields.io/badge/Microsoft_Outlook-0078D4?style=for-the-badge&logo=microsoft-outlook&logoColor=white"/></a>
 <a href="mailto:cesareduardomucha@gmail.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
 </p>
-
-### License
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
