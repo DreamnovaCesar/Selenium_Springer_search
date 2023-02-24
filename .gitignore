@@ -1,13 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
-*$py.class
 
 # OS-specific files
-.DS_Store
-Thumbs.db
-.vscode/
+app/Springer/
+app/src/Data/geckodriver.log
 
-# OS-specific files
-app\src\Data\geckodriver.log
-app\Ancientcode
+app/src/__pycache__/
