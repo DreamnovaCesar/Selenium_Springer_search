@@ -24,16 +24,13 @@ from memory_profiler import profile
 from abc import ABCMeta
 from abc import abstractmethod
 
-from Springer_Selenium_Class_Libraries import *
-from Springer_Selenium_Class_Utilities import Utilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-import Settings
-
+    
 # ?
-class SpringerInfoCollector(Utilities):
+class SpringerInfoCollector(object):
     """Class for getting information about publications related to the subject the user wants on the Springer website
 
     Parameters
@@ -121,8 +118,6 @@ class SpringerInfoCollector(Utilities):
             print("None")
 
     # ? Scrapes information from the Springer website and stores it in a pandas dataframe.
-    @profile
-    @Utilities.timer_func
     def get_info_springer(self) -> None:
         """
         This function uses the Selenium WebDriver to automate the process of searching for 

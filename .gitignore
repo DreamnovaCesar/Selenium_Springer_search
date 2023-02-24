@@ -1,4 +1,13 @@
-_pyache_
-Springer_Selenium_Class_Get_Info_test.py
-Test.py
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
 
+# OS-specific files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# OS-specific files
+app\src\Data\geckodriver.log
+app\Ancientcode
