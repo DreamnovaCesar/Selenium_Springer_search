@@ -3,10 +3,7 @@
 
 Springer is a global publishing company that specializes in academic journals, books, and reference works. Founded in 1842, Springer has since grown to become one of the world's largest academic publishers with offices in over 20 countries. Springer publishes research and scholarly works in a wide range of fields, including science, technology, medicine, engineering, social sciences, humanities, and business. They publish peer-reviewed academic journals, books, and reference works in both print and digital formats, and their online platform provides access to millions of articles and books from thousands of authors and editors. Springer aims to promote the dissemination of scientific knowledge, facilitate communication among researchers and academics, and advance research and education worldwide.
 
-<p align="center">
 ![alt text](Springer_Extractor.png)
-</p>
-
 
 ## Setup
 
