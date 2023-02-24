@@ -1,4 +1,4 @@
-![alt text](Springer Extractor.png)
+![alt text](Springer_Extractor.png)
 
 # Web scraping to Springer page
 
