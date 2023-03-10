@@ -1,0 +1,2 @@
+from .InfoCollector import InfoCollector
+from .SpringerInfoCollector import SpringerInfoCollector

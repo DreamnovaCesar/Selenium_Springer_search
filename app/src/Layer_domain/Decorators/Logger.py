@@ -20,8 +20,8 @@ class Logger(object):
         """
         @wraps(func)
         def wrapper(*args, **kwargs):
-            print(f"Function {func.__name__} called with args {args} and kwargs {kwargs}.")
-            result = func(*args, **kwargs)
-            print(f"Function {func.__name__} returned {result}.")
+            print(f"Function {func.__name__} called with args {args} and kwargs {kwargs}.");
+            result = func(*args, **kwargs);
+            print(f"Function {func.__name__} returned {result}.");
             return result
         return wrapper

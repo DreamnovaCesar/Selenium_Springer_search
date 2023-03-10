@@ -5,17 +5,14 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-from ..Decorators.Timer import Timer
-from ..Decorators.Singleton import Singleton
-
 from .InfoCollector import InfoCollector
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from ...Utilities import Settings
+from ..Utilities import Settings
 
-@Singleton.singleton
+
 class SpringerInfoCollector(InfoCollector):
     """
     Concrete class for collecting information from Springer website.
@@ -54,11 +51,14 @@ class SpringerInfoCollector(InfoCollector):
         # * Sets the URL for Springer website and folder path for collected data
         self.__Springer_link = "https://link.springer.com/";
         self.__Folder = r'App\src\Data';
+        self._Time_interval = 0.1;
+        self._Implicitly = 10;
+        self._Pages_implicitly = 0.5;
 
         # * Sets the columns for the collected data in uppercase and lowercase for comparison
-        self.__Columns_springer_info = [
+        self.__Columns_springer_info = (
             "Href", "Title", "Subtitle", "Authors", "Publication_title", "Year", "DOI"
-        ];
+        );
         
         self.__Columns_springer_info_lower = [
             i.lower() for i in self.__Columns_springer_info
@@ -68,7 +68,6 @@ class SpringerInfoCollector(InfoCollector):
         self.Dataframe_springer_info = pd.DataFrame(columns = self.__Columns_springer_info);
 
     # * Decorator for timing how long the collect_info method takes to execute
-    @Timer.timer
     def collect_info(self, Subject: str, Pages_number : int = 20) -> pd.DataFrame:
         """
         Collects information for a given search subject.
@@ -84,38 +83,40 @@ class SpringerInfoCollector(InfoCollector):
             The dataframe containing the collected data.
         """
 
+        # * Convertion string to integer
+        Pages_number = int(Pages_number)
+
         # * Sets a value for the sleep time and navigates to the Springer website
-        Time_sleep_value = 0.1
-        self.__Driver.get(self.__Springer_link)
-        self.__Driver.implicitly_wait(Time_sleep_value)
+        self.__Driver.get(self.__Springer_link);
+        self.__Driver.implicitly_wait(self._Implicitly);
 
         # * Waits until the search box is present on the page
         Search_box = WebDriverWait(self.__Driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, Settings._ID_QUERY_)))
+            EC.presence_of_element_located((By.XPATH, Settings._ID_QUERY_)));
 
         # * Enters the search term into the search box and clicks the search button
-        Search_box.send_keys(Subject)
-        time.sleep(Time_sleep_value)
-        Search_button = self.__Driver.find_element(By.XPATH, Settings._ID_SEARCH_)
-        Search_button.click()
+        Search_box.send_keys(Subject);
+        time.sleep(self._Time_interval);
+        Search_button = self.__Driver.find_element(By.XPATH, Settings._ID_SEARCH_);
+        Search_button.click();
 
         # * Initializes an empty Pandas DataFrame to store collected data
-        Dataframe_springer_info = pd.DataFrame(columns = self.__Columns_springer_info)
+        Dataframe_springer_info = pd.DataFrame(columns = self.__Columns_springer_info);
 
         # * Iterates over pages_number value search results and collects information
         for _ in range(Pages_number):
             
             # Waits for the search results to load
-            self.__Driver.implicitly_wait(Time_sleep_value)
+            self.__Driver.implicitly_wait(self._Time_interval);
 
             # Finds the list of search results and iterates over each publication
-            Results_list = self.__Driver.find_element(By.CLASS_NAME, Settings._CONTENT_LIST_)
-            Publications = Results_list.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
-            None_ = 'None'
+            Results_list = self.__Driver.find_element(By.CLASS_NAME, Settings._CONTENT_LIST_);
+            Publications = Results_list.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_);
+            None_ = 'None';
 
             for _, Publication in enumerate(Publications):
                 
-                Columns_values = []
+                Columns_values = [];
 
                 # * Tries to extract the href links for the publication and appends to column_values
                 try:
@@ -128,7 +129,7 @@ class SpringerInfoCollector(InfoCollector):
 
                 except NoSuchElementException:
                     # * Appends empty string to column_values if the element is not found
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
 
                 try:
@@ -137,7 +138,7 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append(Title);
 
                 except NoSuchElementException:
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
                     
                 try:
@@ -146,7 +147,7 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append(Subtitle);
 
                 except NoSuchElementException:
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
 
                 try:
@@ -155,7 +156,7 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append(Authors);
 
                 except NoSuchElementException:
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
 
                 try:
@@ -164,7 +165,7 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append(Publication_title);
 
                 except NoSuchElementException:
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
 
                 try:
@@ -173,33 +174,33 @@ class SpringerInfoCollector(InfoCollector):
                     Columns_values.append(Year);
 
                 except NoSuchElementException:
-                    Columns_values.append('')
+                    Columns_values.append('');
                     print(None_);
 
-                # navigate to another website in the new ta
-                self.__Driver.execute_script("window.open('');")
+                # * navigate to another website in the new ta
+                self.__Driver.execute_script("window.open('');");
 
-                # switch to the new tab
-                self.__Driver.switch_to.window(self.__Driver.window_handles[-1])
+                # * switch to the new tab
+                self.__Driver.switch_to.window(self.__Driver.window_handles[-1]);
 
                 # * Navigate to another website in the new tab
                 if(Link_href):
-                    self.__Driver.get(Link_href)
+                    self.__Driver.get(Link_href);
 
                     # * Waiting time
-                    self.__Driver.implicitly_wait(Time_sleep_value)
+                    self.__Driver.implicitly_wait(self._Pages_implicitly);
                     
                     # * Search for DOI information
                     try:
 
-                        Table_info = self.__Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_)
-                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
+                        Table_info = self.__Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_);
+                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_);
 
                         for Cell in Cells_info:
-                            DOI_text = Cell.find_element(By.CLASS_NAME, Settings._DOI_TEXT_).text
+                            DOI_text = Cell.find_element(By.CLASS_NAME, Settings._DOI_TEXT_).text;
 
                             if(DOI_text == 'DOI'):
-                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
+                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text;
 
                         print("{}: {}".format(self.__Columns_springer_info[6], DOI));
                         Columns_values.append(DOI);
@@ -210,50 +211,51 @@ class SpringerInfoCollector(InfoCollector):
 
                     try:
 
-                        Table_info = self.__Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_UMB24_)
-                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_)
+                        Table_info = self.__Driver.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_LIST_UMB24_);
+                        Cells_info = Table_info.find_elements(By.TAG_NAME, Settings._TAG_NAME_LI_);
 
                         for Cell in Cells_info:
-                            DOI_text = Cell.find_element(By.CLASS_NAME, Settings._DIGITAL_OBJECT_IDENTIFIER_).text
+                            DOI_text = Cell.find_element(By.CLASS_NAME, Settings._DIGITAL_OBJECT_IDENTIFIER_).text;
 
                             if(DOI_text == 'DOI'):
-                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text
+                                DOI = Cell.find_element(By.CLASS_NAME, Settings._BIBLIOGRAPHIC_INFO_VALUE_).text;
 
                         print("{}: {}".format(self.__Columns_springer_info[6], DOI));
                         Columns_values.append(DOI);
 
                     except NoSuchElementException:
-                        Columns_values.append('')
+                        Columns_values.append('');
                         print(None_);
                     
-                    New_row_to_add = dict(zip(self.__Columns_springer_info, Columns_values))
+                    New_row_to_add = dict(zip(self.__Columns_springer_info, Columns_values));
                     
                     # * Name CSV file and save it to the folder
-                    Dataframe_springer_info = Dataframe_springer_info.append(pd.Series(New_row_to_add), ignore_index = True)
-                    Dataframe_springer_info_name = "{}_info.csv".format(Subject)
-                    Dataframe_springer_info_csv = os.path.join(self.__Folder, Dataframe_springer_info_name)
-                    Dataframe_springer_info.to_csv(Dataframe_springer_info_csv, index = False)
+                    Dataframe_springer_info = Dataframe_springer_info.append(pd.Series(New_row_to_add), ignore_index = True);
+                    Dataframe_springer_info_name = "{}_info.csv".format(Subject);
+                    Dataframe_springer_info_csv = os.path.join(self.__Folder, Dataframe_springer_info_name);
+                    Dataframe_springer_info.to_csv(Dataframe_springer_info_csv, index = False);
                 
-                    print(Dataframe_springer_info)
+                    #print(Dataframe_springer_info);
 
                     # * Interval times
-                    time.sleep(Time_sleep_value);
+                    time.sleep(self._Time_interval);
 
                     # * close the new tab
-                    self.__Driver.close()
+                    self.__Driver.close();
 
                     # * switch back to the original tab
-                    self.__Driver.switch_to.window(self.__Driver.window_handles[0])
+                    self.__Driver.switch_to.window(self.__Driver.window_handles[0]);
 
             # * Interval times
-            time.sleep(Time_sleep_value);
+            time.sleep(self._Time_interval);
             
             # * Button to change the current page to the new page
-            Next_button = self.__Driver.find_element(By.CLASS_NAME, Settings._NEXT_CONTEST_LIST_)
-            Next_button.click()
+            Next_button = self.__Driver.find_element(By.CLASS_NAME, 
+                                                     Settings._NEXT_CONTEST_LIST_);
+            Next_button.click();
 
         # * Interval times
-        time.sleep(Time_sleep_value);
+        time.sleep(self._Time_interval);
 
         # * Close Driver
-        self.__Driver.quit()
+        self.__Driver.quit();
