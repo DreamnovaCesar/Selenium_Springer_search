@@ -9,8 +9,20 @@ Springer is a global publishing company that specializes in academic journals, b
 
 To create a virtual environment with TensorFlow using Anaconda, follow these steps:
 
+Clone github repository in your local system.
+
+```python
+git clone https://github.com/DreamnovaCesar/Selenium_MOE_GAN_downloader.git
+```
+
+Move in Selenium_MOE_GAN_downloader repository
+
+```python
+cd Selenium_MOE_GAN_downloader
+```
 Open the Anaconda Prompt by clicking the Start button and typing "Anaconda Prompt".
 Type the following command to create a new virtual environment called "tfenv" (We used python 3.11):
+
 ```python
 conda create --name tfenv python=3.11
 ```
