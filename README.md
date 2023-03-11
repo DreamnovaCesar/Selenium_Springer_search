@@ -12,13 +12,13 @@ To create a virtual environment with TensorFlow using Anaconda, follow these ste
 Clone github repository in your local system.
 
 ```python
-git clone https://github.com/DreamnovaCesar/Selenium_MOE_GAN_downloader.git
+git clone https://github.com/DreamnovaCesar/Selenium_Springer_search.git
 ```
 
-Move in Selenium_MOE_GAN_downloader repository
+Move in Selenium_Springer_search repository
 
 ```python
-cd Selenium_MOE_GAN_downloader
+cd Selenium_Springer_search
 ```
 Open the Anaconda Prompt by clicking the Start button and typing "Anaconda Prompt".
 Type the following command to create a new virtual environment called "tfenv" (We used python 3.11):
